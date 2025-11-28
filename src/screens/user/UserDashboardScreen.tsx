@@ -16,11 +16,54 @@ import { useApp } from '../../context/AppContext';
 const UserDashboardScreen = ({ navigation }) => {
   const { user, tasks } = useApp();
 
-  const ongoingTasks = tasks.filter(
+  const mockTasks = tasks.length > 0 ? tasks : [
+    {
+      id: '1',
+      type: 'send',
+      pickup: 'SM Megamall, Mandaluyong City',
+      dropoff: 'Greenbelt Mall, Makati City',
+      status: 'in_transit',
+      price: 150,
+      eta: '12 min',
+      courier: { name: 'Juan Dela Cruz', phone: '+63 912 345 6789' },
+    },
+    {
+      id: '2',
+      type: 'errand',
+      pickup: 'Mercury Drug, BGC',
+      dropoff: 'Burgos Circle, BGC',
+      status: 'pickup',
+      price: 200,
+      eta: '8 min',
+      courier: { name: 'Maria Santos', phone: '+63 917 654 3210' },
+    },
+    {
+      id: '3',
+      type: 'send',
+      pickup: 'Bonifacio High Street',
+      dropoff: 'Rockwell Center, Makati',
+      status: 'completed',
+      price: 180,
+      createdAt: '2024-01-15 14:30',
+      courier: { name: 'Pedro Garcia' },
+    },
+    {
+      id: '4',
+      type: 'multistop',
+      pickup: 'Mall of Asia',
+      dropoff: 'Alabang Town Center',
+      status: 'completed',
+      price: 250,
+      createdAt: '2024-01-14 10:15',
+      courier: { name: 'Ana Cruz' },
+    },
+  ];
+
+  const ongoingTasks = mockTasks.filter(
     task => ['searching', 'accepted', 'pickup', 'in_transit'].includes(task.status)
   );
 
-  const recentTasks = tasks.filter(
+  const recentTasks = mockTasks.filter(
     task => ['completed', 'cancelled'].includes(task.status)
   ).slice(0, 5);
 
