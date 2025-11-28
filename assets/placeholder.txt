@@ -1,0 +1,13 @@
+# Assets Folder
+
+This folder should contain:
+- icon.png (app icon, 1024x1024)
+- splash.png (splash screen, 1284x2778)
+- adaptive-icon.png (Android adaptive icon, 1024x1024)
+
+For now, Expo will use default placeholder images.
+
+To add custom assets:
+1. Create your app icon (1024x1024 PNG)
+2. Create your splash screen (1284x2778 PNG)
+3. Replace the files referenced in app.json
