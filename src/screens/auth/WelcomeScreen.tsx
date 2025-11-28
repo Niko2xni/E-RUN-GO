@@ -2,15 +2,18 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../../components/Button';
 
 const WelcomeScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
+
   return (
     <LinearGradient
       colors={['#10b981', '#059669']}
       style={styles.gradient}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingTop: insets.top > 0 ? insets.top + 20 : 60 }]}>
         {/* Hero Section */}
         <View style={styles.heroSection}>
           <View style={styles.iconContainer}>
@@ -32,7 +35,7 @@ const WelcomeScreen = ({ navigation }: any) => {
         </View>
 
         {/* Footer Buttons */}
-        <View style={styles.footer}>
+        <View style={[styles.footer, { paddingBottom: insets.bottom > 0 ? insets.bottom + 20 : 40 }]}>
           <Button
             title="Continue as User"
             onPress={() => navigation.navigate('Login', { role: 'user' })}
@@ -59,8 +62,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 40,
   },
   heroSection: {
     alignItems: 'center',
