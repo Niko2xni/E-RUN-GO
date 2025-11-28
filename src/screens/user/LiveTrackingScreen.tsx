@@ -19,7 +19,8 @@ const LiveTrackingScreen = ({ navigation, route }) => {
   const { currentTask } = useApp();
   const [activeTab, setActiveTab] = useState('tracking');
 
-  const task = currentTask || {
+  // Use task from route params or fallback to currentTask or default
+  const task = route?.params?.task || currentTask || {
     id: '1',
     type: 'send',
     pickup: '123 Makati Avenue, Makati City',
@@ -74,26 +75,57 @@ const LiveTrackingScreen = ({ navigation, route }) => {
 
       <View style={styles.mapContainer}>
         <View style={styles.mapPlaceholder}>
-          <View style={styles.routeContainer}>
-            <View style={styles.locationPoint}>
-              <Ionicons name="ellipse" size={32} color={COLORS.primary} />
-              <Text style={styles.locationLabel}>Pickup</Text>
+          <View style={styles.mapContent}>
+            {/* Pickup Location */}
+            <View style={styles.locationCard}>
+              <View style={styles.locationMarker}>
+                <Ionicons name="ellipse" size={24} color={COLORS.primary} />
+              </View>
+              <View style={styles.locationInfo}>
+                <Text style={styles.locationTitle}>Pickup Location</Text>
+                <Text style={styles.locationAddress} numberOfLines={2}>
+                  {task.pickup}
+                </Text>
+              </View>
             </View>
 
-            <View style={styles.routeLine}>
-              <Ionicons name="bicycle" size={40} color={COLORS.white} />
+            {/* Route Visualization */}
+            <View style={styles.routeVisualization}>
+              <View style={styles.routePath}>
+                {/* Top segment */}
+                <View style={styles.pathSegment} />
+
+                {/* Courier position */}
+                <View style={styles.courierMarker}>
+                  <View style={styles.courierPulse} />
+                  <View style={styles.courierIcon}>
+                    <Ionicons name="bicycle" size={20} color={COLORS.white} />
+                  </View>
+                </View>
+
+                {/* Bottom segment */}
+                <View style={styles.pathSegment} />
+              </View>
             </View>
 
-            <View style={styles.locationPoint}>
-              <Ionicons name="location" size={40} color={COLORS.error} />
-              <Text style={styles.locationLabel}>Drop-off</Text>
+            {/* Dropoff Location */}
+            <View style={styles.locationCard}>
+              <View style={[styles.locationMarker, styles.dropoffMarker]}>
+                <Ionicons name="location" size={28} color={COLORS.error} />
+              </View>
+              <View style={styles.locationInfo}>
+                <Text style={styles.locationTitle}>Drop-off Location</Text>
+                <Text style={styles.locationAddress} numberOfLines={2}>
+                  {task.dropoff}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
 
         <View style={styles.etaBadge}>
           <Ionicons name="time-outline" size={16} color={COLORS.white} />
-          <Text style={styles.etaText}>ETA: {task.eta}</Text>
+          <Text style={styles.etaText}>ETA: {task.eta || '15 min'}</Text>
         </View>
       </View>
 
@@ -288,30 +320,83 @@ const styles = StyleSheet.create({
   },
   mapPlaceholder: {
     flex: 1,
+    backgroundColor: '#e8f5f0',
+    paddingVertical: 40,
+  },
+  mapContent: {
+    flex: 1,
+    justifyContent: 'space-around',
+    paddingHorizontal: SIZES.paddingLarge,
+  },
+  locationCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    padding: SIZES.padding,
+    borderRadius: SIZES.radius,
+    gap: SIZES.margin,
+    ...SHADOWS.medium,
+  },
+  locationMarker: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: COLORS.secondary,
+    alignItems: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  routeContainer: {
-    alignItems: 'center',
-    gap: 20,
+  dropoffMarker: {
+    backgroundColor: '#fee2e2',
   },
-  locationPoint: {
-    alignItems: 'center',
-    gap: 8,
+  locationInfo: {
+    flex: 1,
   },
-  locationLabel: {
-    fontSize: SIZES.body,
+  locationTitle: {
+    fontSize: SIZES.small,
     fontWeight: '600',
+    color: COLORS.textGray,
+    marginBottom: 4,
+  },
+  locationAddress: {
+    fontSize: SIZES.body,
+    fontWeight: '500',
     color: COLORS.textDark,
   },
-  routeLine: {
-    height: 80,
-    width: 4,
+  routeVisualization: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  routePath: {
+    alignItems: 'center',
+  },
+  pathSegment: {
+    width: 3,
+    height: 60,
     backgroundColor: COLORS.primary,
     borderRadius: 2,
-    justifyContent: 'center',
+  },
+  courierMarker: {
+    position: 'relative',
+    marginVertical: 10,
+  },
+  courierPulse: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.primary,
+    opacity: 0.2,
+    top: -10,
+    left: -10,
+  },
+  courierIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.primary,
     alignItems: 'center',
+    justifyContent: 'center',
+    ...SHADOWS.large,
   },
   etaBadge: {
     position: 'absolute',
