@@ -8,7 +8,8 @@ import {
   Image,
   Linking,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import MapView, { Marker, Polyline } from 'react-native-maps';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, SHADOWS } from '../../constants/theme';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
@@ -24,23 +25,31 @@ const LiveTrackingScreen = ({ navigation, route }) => {
     id: '1',
     type: 'send',
     pickup: '123 Makati Avenue, Makati City',
+    pickupCoordinates: { latitude: 14.5547, longitude: 121.0244 },
     dropoff: '456 Quezon Avenue, Quezon City',
+    dropoffCoordinates: { latitude: 14.6760, longitude: 121.0437 },
     status: 'in_transit',
-    courier: {
-      name: 'Juan Dela Cruz',
-      rating: 4.8,
-      vehicle: 'Motorcycle',
-      plate: 'ABC 1234',
-      phone: '+639171234567',
+    drone: {
+      id: 'DRN-001',
+      model: 'Phantom X5',
+      batteryLevel: 85,
+      altitude: 120,
+      speed: 45,
+      currentLocation: { latitude: 14.6199, longitude: 121.0320 },
     },
+    distance: '5.2 km',
+    remainingDistance: '2.1 km',
     eta: '12 min',
     price: 150,
+    description: 'Deliver small package',
+    createdAt: '2024-01-15 14:30',
+    paymentMethod: 'Cash on Delivery',
   };
 
   const statusSteps = [
-    { status: 'searching', label: 'Searching for courier' },
-    { status: 'accepted', label: 'Courier accepted' },
-    { status: 'pickup', label: 'On the way to pickup' },
+    { status: 'searching', label: 'Preparing drone' },
+    { status: 'accepted', label: 'Drone dispatched' },
+    { status: 'pickup', label: 'Flying to pickup' },
     { status: 'in_transit', label: 'Item picked up' },
     { status: 'completed', label: 'Delivered' },
   ];
@@ -54,12 +63,9 @@ const LiveTrackingScreen = ({ navigation, route }) => {
     completed: index <= currentStatusIndex,
   }));
 
-  const handleCall = () => {
-    Linking.openURL(`tel:${task.courier.phone}`);
-  };
-
-  const handleChat = () => {
-    // Navigate to chat screen
+  const handleSupport = () => {
+    // Open support contact
+    Linking.openURL('tel:+639171234567');
   };
 
   const handleCancel = () => {
@@ -79,54 +85,62 @@ const LiveTrackingScreen = ({ navigation, route }) => {
       </View>
 
       <View style={styles.mapContainer}>
-        <View style={styles.mapPlaceholder}>
-          <View style={styles.mapContent}>
-            {/* Pickup Location */}
-            <View style={styles.locationCard}>
-              <View style={styles.locationMarker}>
-                <Ionicons name="ellipse" size={24} color={COLORS.primary} />
-              </View>
-              <View style={styles.locationInfo}>
-                <Text style={styles.locationTitle}>Pickup Location</Text>
-                <Text style={styles.locationAddress} numberOfLines={2}>
-                  {task.pickup}
-                </Text>
-              </View>
-            </View>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: task.drone?.currentLocation?.latitude || task.pickupCoordinates.latitude,
+            longitude: task.drone?.currentLocation?.longitude || task.pickupCoordinates.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        >
+          {/* Pickup Marker */}
+          <Marker
+            coordinate={task.pickupCoordinates}
+            title="Pickup"
+            description={task.pickup}
+          />
 
-            {/* Route Visualization */}
-            <View style={styles.routeVisualization}>
-              <View style={styles.routePath}>
-                {/* Top segment */}
-                <View style={styles.pathSegment} />
+          {/* Dropoff Marker */}
+          <Marker
+            coordinate={task.dropoffCoordinates}
+            title="Drop-off"
+            description={task.dropoff}
+          />
 
-                {/* Courier position */}
-                <View style={styles.courierMarker}>
-                  <View style={styles.courierPulse} />
-                  <View style={styles.courierIcon}>
-                    <Ionicons name="bicycle" size={20} color={COLORS.white} />
-                  </View>
+          {/* Drone Location Marker */}
+          {task.drone?.currentLocation && (
+            <Marker
+              coordinate={task.drone.currentLocation}
+              title="Drone Location"
+              description={task.drone.model}
+            >
+              <View style={styles.droneMarkerContainer}>
+                <View style={styles.dronePulse} />
+                <View style={styles.droneIcon}>
+                  <MaterialCommunityIcons
+                    name="drone"
+                    size={20}
+                    color={COLORS.white}
+                  />
                 </View>
+              </View>
+            </Marker>
+          )}
 
-                {/* Bottom segment */}
-                <View style={styles.pathSegment} />
-              </View>
-            </View>
-
-            {/* Dropoff Location */}
-            <View style={styles.locationCard}>
-              <View style={[styles.locationMarker, styles.dropoffMarker]}>
-                <Ionicons name="location" size={28} color={COLORS.error} />
-              </View>
-              <View style={styles.locationInfo}>
-                <Text style={styles.locationTitle}>Drop-off Location</Text>
-                <Text style={styles.locationAddress} numberOfLines={2}>
-                  {task.dropoff}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
+          {/* Route Polyline */}
+          {task.drone?.currentLocation && (
+            <Polyline
+              coordinates={[
+                task.pickupCoordinates,
+                task.drone.currentLocation,
+                task.dropoffCoordinates,
+              ]}
+              strokeColor={COLORS.primary}
+              strokeWidth={3}
+            />
+          )}
+        </MapView>
 
         <View style={styles.etaBadge}>
           <Ionicons name="time-outline" size={16} color={COLORS.white} />
@@ -162,34 +176,28 @@ const LiveTrackingScreen = ({ navigation, route }) => {
         >
           {activeTab === 'tracking' ? (
             <>
-              {task.courier && (
-                <Card style={styles.courierCard}>
-                  <View style={styles.courierHeader}>
-                    <View style={styles.courierInfo}>
-                      <View style={styles.courierAvatar}>
-                        <Ionicons name="person" size={32} color={COLORS.white} />
+              {task.drone && (
+                <Card style={styles.droneCard}>
+                  <View style={styles.droneHeader}>
+                    <View style={styles.droneInfo}>
+                      <View style={styles.droneAvatar}>
+                        <MaterialCommunityIcons name="drone" size={32} color={COLORS.white} />
                       </View>
-                      <View style={styles.courierDetails}>
-                        <Text style={styles.courierName}>{task.courier.name}</Text>
-                        <View style={styles.ratingContainer}>
-                          <Ionicons name="star" size={14} color="#f59e0b" />
-                          <Text style={styles.rating}>{task.courier?.rating || '5.0'}</Text>
-                          {task.courier?.vehicle && (
-                            <Text style={styles.vehicle}>
-                              • {task.courier.vehicle} • {task.courier.plate}
-                            </Text>
-                          )}
-                        </View>
+                      <View style={styles.droneDetails}>
+                        <Text style={styles.droneName}>{task.drone.model}</Text>
+                        <Text style={styles.droneId}>ID: {task.drone.id}</Text>
                       </View>
                     </View>
 
-                    <View style={styles.courierActions}>
-                      <TouchableOpacity style={styles.actionButton} onPress={handleCall}>
-                        <Ionicons name="call" size={20} color={COLORS.primary} />
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.actionButton} onPress={handleChat}>
-                        <Ionicons name="chatbubble" size={20} color={COLORS.primary} />
-                      </TouchableOpacity>
+                    <View style={styles.droneStats}>
+                      <View style={styles.statItem}>
+                        <Ionicons name="battery-half" size={16} color={COLORS.success} />
+                        <Text style={styles.statText}>{task.drone.batteryLevel}%</Text>
+                      </View>
+                      <View style={styles.statItem}>
+                        <Ionicons name="speedometer" size={16} color={COLORS.primary} />
+                        <Text style={styles.statText}>{task.drone.speed} km/h</Text>
+                      </View>
                     </View>
                   </View>
                 </Card>
@@ -322,78 +330,23 @@ const styles = StyleSheet.create({
     height: 450,
     position: 'relative',
   },
-  mapPlaceholder: {
-    height: '100%',
-    backgroundColor: '#e8f5f0',
-    paddingVertical: 40,
+  map: {
+    flex: 1,
   },
-  mapContent: {
-    height: '100%',
-    justifyContent: 'space-around',
-    paddingHorizontal: SIZES.paddingLarge,
-  },
-  locationCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.white,
-    padding: SIZES.padding,
-    borderRadius: SIZES.radius,
-    gap: SIZES.margin,
-    ...SHADOWS.medium,
-  },
-  locationMarker: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLORS.secondary,
+  droneMarkerContainer: {
+    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dropoffMarker: {
-    backgroundColor: '#fee2e2',
-  },
-  locationInfo: {
-    flex: 1,
-  },
-  locationTitle: {
-    fontSize: SIZES.small,
-    fontWeight: '600',
-    color: COLORS.textGray,
-    marginBottom: 4,
-  },
-  locationAddress: {
-    fontSize: SIZES.body,
-    fontWeight: '500',
-    color: COLORS.textDark,
-  },
-  routeVisualization: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  routePath: {
-    alignItems: 'center',
-  },
-  pathSegment: {
-    width: 3,
-    height: 60,
-    backgroundColor: COLORS.primary,
-    borderRadius: 2,
-  },
-  courierMarker: {
-    position: 'relative',
-    marginVertical: 10,
-  },
-  courierPulse: {
+  dronePulse: {
     position: 'absolute',
     width: 60,
     height: 60,
     borderRadius: 30,
     backgroundColor: COLORS.primary,
     opacity: 0.2,
-    top: -10,
-    left: -10,
   },
-  courierIcon: {
+  droneIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -463,19 +416,20 @@ const styles = StyleSheet.create({
   sheetContent: {
     paddingHorizontal: SIZES.paddingLarge,
   },
-  courierCard: {
+  droneCard: {
     marginBottom: SIZES.margin,
   },
-  courierHeader: {
+  droneHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  courierInfo: {
+  droneInfo: {
     flexDirection: 'row',
     flex: 1,
     gap: SIZES.margin,
   },
-  courierAvatar: {
+  droneAvatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -483,41 +437,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  courierDetails: {
+  droneDetails: {
     flex: 1,
     justifyContent: 'center',
   },
-  courierName: {
+  droneName: {
     fontSize: SIZES.h4,
     fontWeight: 'bold',
     color: COLORS.textDark,
     marginBottom: 4,
   },
-  ratingContainer: {
+  droneId: {
+    fontSize: SIZES.small,
+    color: COLORS.textGray,
+  },
+  droneStats: {
+    gap: SIZES.marginSmall,
+  },
+  statItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-  rating: {
+  statText: {
     fontSize: SIZES.small,
     fontWeight: '600',
     color: COLORS.textDark,
-  },
-  vehicle: {
-    fontSize: SIZES.small,
-    color: COLORS.textGray,
-  },
-  courierActions: {
-    flexDirection: 'row',
-    gap: SIZES.marginSmall,
-  },
-  actionButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLORS.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   timelineContainer: {
     marginBottom: SIZES.marginLarge,

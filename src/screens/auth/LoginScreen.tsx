@@ -7,18 +7,18 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../constants/theme';
+import { Asset } from 'expo-asset';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { useApp } from '../../context/AppContext';
 
 const LoginScreen = ({ navigation, route }) => {
   const { login } = useApp();
-  const initialRole = route?.params?.role || 'user';
 
-  const [role, setRole] = useState(initialRole);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -43,27 +43,27 @@ const LoginScreen = ({ navigation, route }) => {
     setTimeout(() => {
       const userData = {
         id: '1',
-        name: role === 'user' ? 'John Doe' : 'Mike Wilson',
+        name: 'John Doe',
         email,
         phone: '+1234567890',
         avatar: null,
       };
 
-      login(userData, role);
+      login(userData);
       setLoading(false);
     }, 1000);
   };
 
-  const handleBypass = (bypassRole: string) => {
+  const handleBypass = () => {
     const userData = {
       id: '1',
-      name: bypassRole === 'user' ? 'Guest User' : 'Guest Courier',
+      name: 'Guest User',
       email: 'guest@example.com',
       phone: '+1234567890',
       avatar: null,
     };
 
-    login(userData, bypassRole);
+    login(userData);
   };
 
   return (
@@ -76,60 +76,15 @@ const LoginScreen = ({ navigation, route }) => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={24} color={COLORS.textDark} />
-          </TouchableOpacity>
+          <View style={styles.logoContainer}>
+            <Image 
+              source={require('../../../assets/icon.png')} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
           <Text style={styles.title}>Welcome Back</Text>
           <Text style={styles.subtitle}>Sign in to continue</Text>
-        </View>
-
-        <View style={styles.roleSelector}>
-          <TouchableOpacity
-            style={[
-              styles.roleButton,
-              role === 'user' && styles.roleButtonActive,
-            ]}
-            onPress={() => setRole('user')}
-          >
-            <Ionicons
-              name="person-outline"
-              size={20}
-              color={role === 'user' ? COLORS.white : COLORS.textGray}
-            />
-            <Text
-              style={[
-                styles.roleButtonText,
-                role === 'user' && styles.roleButtonTextActive,
-              ]}
-            >
-              User
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.roleButton,
-              role === 'courier' && styles.roleButtonActive,
-            ]}
-            onPress={() => setRole('courier')}
-          >
-            <Ionicons
-              name="bicycle-outline"
-              size={20}
-              color={role === 'courier' ? COLORS.white : COLORS.textGray}
-            />
-            <Text
-              style={[
-                styles.roleButtonText,
-                role === 'courier' && styles.roleButtonTextActive,
-              ]}
-            >
-              Courier
-            </Text>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.form}>
@@ -167,13 +122,13 @@ const LoginScreen = ({ navigation, route }) => {
           <View style={styles.signupContainer}>
             <Text style={styles.signupText}>Don't have an account? </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Register', { role })}
+              onPress={() => navigation.navigate('Register')}
             >
               <Text style={styles.signupLink}>Sign Up</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Bypass buttons for testing */}
+          {/* Bypass button for testing */}
           <View style={styles.bypassSection}>
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
@@ -181,22 +136,13 @@ const LoginScreen = ({ navigation, route }) => {
               <View style={styles.dividerLine} />
             </View>
 
-            <View style={styles.bypassButtons}>
-              <Button
-                title="Bypass as User"
-                onPress={() => handleBypass('user')}
-                variant="outline"
-                icon={<Ionicons name="person-outline" size={20} color={COLORS.primary} />}
-                style={styles.bypassButton}
-              />
-              <Button
-                title="Bypass as Courier"
-                onPress={() => handleBypass('courier')}
-                variant="outline"
-                icon={<Ionicons name="bicycle-outline" size={20} color={COLORS.primary} />}
-                style={styles.bypassButton}
-              />
-            </View>
+            <Button
+              title="Quick Login"
+              onPress={handleBypass}
+              variant="outline"
+              icon={<MaterialCommunityIcons name="robot" size={20} color={COLORS.primary} />}
+              style={styles.bypassButton}
+            />
           </View>
         </View>
       </ScrollView>
@@ -218,7 +164,13 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: SIZES.marginLarge * 1.5,
   },
-  backButton: {
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: SIZES.marginLarge,
+  },
+  logo: {
+    width: 80,
+    height: 80,
     marginBottom: SIZES.marginLarge,
   },
   title: {
@@ -230,35 +182,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: SIZES.body,
     color: COLORS.textGray,
-  },
-  roleSelector: {
-    flexDirection: 'row',
-    gap: SIZES.margin,
-    marginBottom: SIZES.marginLarge,
-  },
-  roleButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: SIZES.padding,
-    borderRadius: SIZES.radius,
-    backgroundColor: COLORS.backgroundGray,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    gap: SIZES.marginSmall,
-  },
-  roleButtonActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
-  },
-  roleButtonText: {
-    fontSize: SIZES.small,
-    fontWeight: '600',
-    color: COLORS.textGray,
-  },
-  roleButtonTextActive: {
-    color: COLORS.white,
   },
   form: {
     flex: 1,
@@ -306,9 +229,6 @@ const styles = StyleSheet.create({
     fontSize: SIZES.small,
     paddingHorizontal: SIZES.padding,
     fontWeight: '500',
-  },
-  bypassButtons: {
-    gap: SIZES.margin,
   },
   bypassButton: {
     borderWidth: 1.5,

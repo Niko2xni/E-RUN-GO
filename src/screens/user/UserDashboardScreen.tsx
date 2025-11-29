@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, SIZES, SHADOWS } from '../../constants/theme';
 import Card from '../../components/Card';
 import StatusBadge from '../../components/StatusBadge';
@@ -21,41 +21,100 @@ const UserDashboardScreen = ({ navigation }) => {
       id: '1',
       type: 'send',
       pickup: 'SM Megamall, Mandaluyong City',
+      pickupCoordinates: { latitude: 14.5849, longitude: 121.0564 },
       dropoff: 'Greenbelt Mall, Makati City',
+      dropoffCoordinates: { latitude: 14.5525, longitude: 121.0199 },
       status: 'in_transit',
       price: 150,
+      distance: '6.8 km',
       eta: '12 min',
-      courier: { name: 'Juan Dela Cruz', phone: '+63 912 345 6789' },
+      description: 'Deliver documents',
+      drone: {
+        id: 'DRN-001',
+        model: 'Phantom X5',
+        batteryLevel: 85,
+        altitude: 120,
+        speed: 45,
+        currentLocation: { latitude: 14.5687, longitude: 121.0382 },
+      },
+      createdAt: '2024-01-15 15:20',
     },
     {
       id: '2',
       type: 'errand',
       pickup: 'Mercury Drug, BGC',
+      pickupCoordinates: { latitude: 14.5507, longitude: 121.0479 },
       dropoff: 'Burgos Circle, BGC',
+      dropoffCoordinates: { latitude: 14.5509, longitude: 121.0511 },
       status: 'pickup',
       price: 200,
+      distance: '1.2 km',
       eta: '8 min',
-      courier: { name: 'Maria Santos', phone: '+63 917 654 3210' },
+      description: 'Buy medicine and deliver',
+      drone: {
+        id: 'DRN-002',
+        model: 'Phantom X5',
+        batteryLevel: 92,
+        altitude: 115,
+        speed: 42,
+        currentLocation: { latitude: 14.5508, longitude: 121.0485 },
+      },
+      createdAt: '2024-01-15 16:45',
     },
     {
       id: '3',
       type: 'send',
       pickup: 'Bonifacio High Street',
+      pickupCoordinates: { latitude: 14.5505, longitude: 121.0517 },
       dropoff: 'Rockwell Center, Makati',
+      dropoffCoordinates: { latitude: 14.5650, longitude: 121.0368 },
       status: 'completed',
       price: 180,
+      distance: '4.5 km',
+      description: 'Office supplies delivery',
+      drone: {
+        id: 'DRN-003',
+        model: 'Phantom X5',
+      },
       createdAt: '2024-01-15 14:30',
-      courier: { name: 'Pedro Garcia' },
+      completedAt: '2024-01-15 15:10',
     },
     {
       id: '4',
       type: 'multistop',
       pickup: 'Mall of Asia',
+      pickupCoordinates: { latitude: 14.5352, longitude: 120.9820 },
       dropoff: 'Alabang Town Center',
+      dropoffCoordinates: { latitude: 14.4195, longitude: 121.0396 },
       status: 'completed',
       price: 250,
+      distance: '18.2 km',
+      stops: 2,
+      description: 'Multi-stop shopping and delivery',
+      drone: {
+        id: 'DRN-004',
+        model: 'Phantom X7',
+      },
       createdAt: '2024-01-14 10:15',
-      courier: { name: 'Ana Cruz' },
+      completedAt: '2024-01-14 12:30',
+    },
+    {
+      id: '5',
+      type: 'send',
+      pickup: 'Glorietta Mall, Makati',
+      pickupCoordinates: { latitude: 14.5506, longitude: 121.0235 },
+      dropoff: 'Century City Mall, Makati',
+      dropoffCoordinates: { latitude: 14.5654, longitude: 121.0351 },
+      status: 'completed',
+      price: 120,
+      distance: '2.8 km',
+      description: 'Gift package delivery',
+      drone: {
+        id: 'DRN-005',
+        model: 'Phantom X5',
+      },
+      createdAt: '2024-01-13 09:45',
+      completedAt: '2024-01-13 10:20',
     },
   ];
 
@@ -169,12 +228,12 @@ const UserDashboardScreen = ({ navigation }) => {
                     </Text>
                   </View>
 
-                  {task.courier && (
-                    <View style={styles.courierInfo}>
-                      <View style={styles.courierAvatar}>
-                        <Ionicons name="person" size={16} color={COLORS.white} />
+                  {task.drone && (
+                    <View style={styles.droneInfo}>
+                      <View style={styles.droneAvatar}>
+                        <MaterialCommunityIcons name="drone" size={16} color={COLORS.white} />
                       </View>
-                      <Text style={styles.courierName}>{task.courier.name}</Text>
+                      <Text style={styles.droneName}>{task.drone.model} ({task.drone.id})</Text>
                     </View>
                   )}
 
@@ -403,7 +462,7 @@ const styles = StyleSheet.create({
     borderLeftColor: COLORS.border,
     borderStyle: 'dashed',
   },
-  courierInfo: {
+  droneInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SIZES.marginSmall,
@@ -412,7 +471,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
   },
-  courierAvatar: {
+  droneAvatar: {
     width: 24,
     height: 24,
     borderRadius: 12,
@@ -420,7 +479,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  courierName: {
+  droneName: {
     fontSize: SIZES.tiny,
     color: COLORS.textGray,
   },

@@ -418,7 +418,7 @@ const CreateTaskScreen = ({ navigation, route }) => {
               </View>
               <Text style={styles.successTitle}>Order Confirmed!</Text>
               <Text style={styles.successSubtitle}>
-                Looking for a courier near you...
+                Dispatching drone to your location...
               </Text>
 
               <Card style={styles.summaryCard}>
@@ -469,7 +469,7 @@ const CreateTaskScreen = ({ navigation, route }) => {
       <View style={styles.footer}>
         {step < 5 && (
           <Button
-            title={step === 4 ? 'Confirm and Request Courier' : 'Next'}
+            title={step === 4 ? 'Confirm and Request Drone' : 'Next'}
             onPress={step === 4 ? handleSubmit : handleNext}
             disabled={
               (step === 1 && !taskType) ||

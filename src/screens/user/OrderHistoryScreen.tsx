@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS, SIZES, SHADOWS } from '../../constants/theme';
 import Card from '../../components/Card';
@@ -24,31 +24,156 @@ const OrderHistoryScreen = ({ navigation }) => {
       id: '1',
       type: 'send',
       pickup: '123 Makati Avenue, Makati City',
+      pickupCoordinates: { latitude: 14.5547, longitude: 121.0244 },
       dropoff: '456 Quezon Avenue, Quezon City',
+      dropoffCoordinates: { latitude: 14.6760, longitude: 121.0437 },
       status: 'completed',
       price: 150,
+      distance: '5.2 km',
+      duration: '28 mins',
+      description: 'Documents delivery',
+      drone: {
+        id: 'DRN-001',
+        model: 'Phantom X5',
+        batteryLevel: 85,
+        avgSpeed: 45,
+      },
       createdAt: '2024-01-15 14:30',
-      courier: { name: 'Juan Dela Cruz' },
+      completedAt: '2024-01-15 15:15',
+      paymentMethod: 'Cash',
     },
     {
       id: '2',
       type: 'errand',
       pickup: '789 BGC, Taguig City',
+      pickupCoordinates: { latitude: 14.5507, longitude: 121.0479 },
       dropoff: '101 Ortigas, Pasig City',
+      dropoffCoordinates: { latitude: 14.5871, longitude: 121.0563 },
       status: 'completed',
       price: 200,
+      distance: '8.1 km',
+      duration: '35 mins',
+      description: 'Grocery shopping and delivery',
+      drone: {
+        id: 'DRN-002',
+        model: 'Phantom X5',
+        batteryLevel: 92,
+        avgSpeed: 42,
+      },
       createdAt: '2024-01-14 10:15',
-      courier: { name: 'Maria Santos' },
+      completedAt: '2024-01-14 11:05',
+      paymentMethod: 'GCash',
     },
     {
       id: '3',
       type: 'multistop',
       pickup: 'SM Mall of Asia',
+      pickupCoordinates: { latitude: 14.5352, longitude: 120.9820 },
       dropoff: 'Bonifacio High Street',
+      dropoffCoordinates: { latitude: 14.5505, longitude: 121.0517 },
       status: 'cancelled',
       price: 180,
+      distance: '12.3 km',
+      stops: 2,
+      description: 'Multi-stop delivery',
+      drone: {
+        id: 'DRN-003',
+        model: 'Phantom X7',
+        batteryLevel: 78,
+        avgSpeed: 50,
+      },
       createdAt: '2024-01-13 16:45',
-      courier: { name: 'Pedro Reyes' },
+      cancelledAt: '2024-01-13 17:00',
+      cancellationReason: 'Customer request',
+      paymentMethod: 'Cash',
+    },
+    {
+      id: '4',
+      type: 'send',
+      pickup: 'Greenbelt Mall, Makati',
+      pickupCoordinates: { latitude: 14.5525, longitude: 121.0199 },
+      dropoff: 'Alabang Town Center, Muntinlupa',
+      dropoffCoordinates: { latitude: 14.4195, longitude: 121.0396 },
+      status: 'completed',
+      price: 320,
+      distance: '15.7 km',
+      duration: '52 mins',
+      description: 'Urgent package delivery',
+      drone: {
+        id: 'DRN-004',
+        model: 'Phantom X5',
+        batteryLevel: 88,
+        avgSpeed: 44,
+      },
+      createdAt: '2024-01-12 09:30',
+      completedAt: '2024-01-12 10:45',
+      paymentMethod: 'GCash',
+    },
+    {
+      id: '5',
+      type: 'errand',
+      pickup: 'Mercury Drug, Mandaluyong',
+      pickupCoordinates: { latitude: 14.5849, longitude: 121.0564 },
+      dropoff: '88 Boni Avenue, Mandaluyong',
+      dropoffCoordinates: { latitude: 14.5798, longitude: 121.0522 },
+      status: 'completed',
+      price: 100,
+      distance: '2.8 km',
+      duration: '15 mins',
+      description: 'Medicine pickup',
+      drone: {
+        id: 'DRN-005',
+        model: 'Phantom X5',
+        batteryLevel: 95,
+        avgSpeed: 40,
+      },
+      createdAt: '2024-01-11 14:20',
+      completedAt: '2024-01-11 14:45',
+      paymentMethod: 'Cash',
+    },
+    {
+      id: '6',
+      type: 'send',
+      pickup: 'Rockwell Center, Makati',
+      pickupCoordinates: { latitude: 14.5650, longitude: 121.0368 },
+      dropoff: 'Ortigas Center, Pasig',
+      dropoffCoordinates: { latitude: 14.5866, longitude: 121.0557 },
+      status: 'completed',
+      price: 180,
+      distance: '6.4 km',
+      duration: '30 mins',
+      description: 'Food delivery',
+      drone: {
+        id: 'DRN-006',
+        model: 'Phantom X5',
+        batteryLevel: 81,
+        avgSpeed: 43,
+      },
+      createdAt: '2024-01-10 12:00',
+      completedAt: '2024-01-10 12:40',
+      paymentMethod: 'Card',
+    },
+    {
+      id: '7',
+      type: 'send',
+      pickup: 'Century City Mall, Makati',
+      pickupCoordinates: { latitude: 14.5654, longitude: 121.0351 },
+      dropoff: 'SM Megamall, Mandaluyong',
+      dropoffCoordinates: { latitude: 14.5849, longitude: 121.0564 },
+      status: 'cancelled',
+      price: 150,
+      distance: '4.2 km',
+      description: 'Package delivery',
+      drone: {
+        id: 'DRN-007',
+        model: 'Phantom X5',
+        batteryLevel: 90,
+        avgSpeed: 46,
+      },
+      createdAt: '2024-01-09 16:15',
+      cancelledAt: '2024-01-09 16:30',
+      cancellationReason: 'Incorrect address',
+      paymentMethod: 'Cash',
     },
   ];
 
@@ -114,10 +239,10 @@ const OrderHistoryScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {item.courier && (
-        <View style={styles.courierRow}>
-          <Ionicons name="person-outline" size={16} color={COLORS.textGray} />
-          <Text style={styles.courierText}>{item.courier.name}</Text>
+      {item.drone && (
+        <View style={styles.droneRow}>
+          <MaterialCommunityIcons name="drone" size={16} color={COLORS.textGray} />
+          <Text style={styles.droneText}>Drone ID: {item.drone.id}</Text>
         </View>
       )}
 
@@ -311,7 +436,7 @@ const styles = StyleSheet.create({
     borderLeftColor: COLORS.border,
     borderStyle: 'dashed',
   },
-  courierRow: {
+  droneRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -320,7 +445,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
   },
-  courierText: {
+  droneText: {
     fontSize: SIZES.tiny,
     color: COLORS.textGray,
   },

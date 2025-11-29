@@ -4,7 +4,6 @@ import { useApp } from '../context/AppContext';
 import { COLORS } from '../constants/theme';
 import AuthNavigator from './AuthNavigator';
 import UserNavigator from './UserNavigator';
-import CourierNavigator from './CourierNavigator';
 
 // Force light theme to prevent color issues with system dark mode
 const AppTheme = {
@@ -21,16 +20,14 @@ const AppTheme = {
 };
 
 const RootNavigator = () => {
-  const { isAuthenticated, userRole } = useApp();
+  const { isAuthenticated } = useApp();
 
   return (
     <NavigationContainer theme={AppTheme}>
       {!isAuthenticated ? (
         <AuthNavigator />
-      ) : userRole === 'user' ? (
-        <UserNavigator />
       ) : (
-        <CourierNavigator />
+        <UserNavigator />
       )}
     </NavigationContainer>
   );

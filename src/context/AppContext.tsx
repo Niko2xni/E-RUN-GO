@@ -1,7 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-type UserRole = 'user' | 'courier' | null;
-
 interface User {
   id: string;
   name: string;
@@ -18,17 +16,14 @@ interface Task {
 
 interface AppContextType {
   user: User | null;
-  userRole: UserRole;
   isAuthenticated: boolean;
   currentTask: Task | null;
   tasks: Task[];
-  courierOnline: boolean;
-  login: (userData: User, role: 'user' | 'courier') => void;
+  login: (userData: User) => void;
   logout: () => void;
   createTask: (taskData: Partial<Task>) => Task;
   updateTaskStatus: (taskId: string, status: Task['status']) => void;
   setCurrentTask: (task: Task | null) => void;
-  toggleCourierOnline: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -39,24 +34,19 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<UserRole>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [courierOnline, setCourierOnline] = useState(false);
 
-  const login = (userData: User, role: 'user' | 'courier'): void => {
+  const login = (userData: User): void => {
     setUser(userData);
-    setUserRole(role);
     setIsAuthenticated(true);
   };
 
   const logout = (): void => {
     setUser(null);
-    setUserRole(null);
     setIsAuthenticated(false);
     setCurrentTask(null);
-    setCourierOnline(false);
   };
 
   const createTask = (taskData: Partial<Task>): Task => {
@@ -80,25 +70,18 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
   };
 
-  const toggleCourierOnline = (): void => {
-    setCourierOnline(!courierOnline);
-  };
-
   return (
     <AppContext.Provider
       value={{
         user,
-        userRole,
         isAuthenticated,
         currentTask,
         tasks,
-        courierOnline,
         login,
         logout,
         createTask,
         updateTaskStatus,
         setCurrentTask,
-        toggleCourierOnline,
       }}
     >
       {children}

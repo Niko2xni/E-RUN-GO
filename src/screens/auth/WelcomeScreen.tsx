@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../../components/Button';
 
@@ -17,11 +17,15 @@ const WelcomeScreen = ({ navigation }: any) => {
         {/* Hero Section */}
         <View style={styles.heroSection}>
           <View style={styles.iconContainer}>
-            <Ionicons name="bicycle" size={90} color="white" />
+            <Image
+              source={require('../../../assets/icon.png')}
+              style={styles.appIcon}
+              resizeMode="contain"
+            />
           </View>
           <Text style={styles.title}>E-Run Go</Text>
           <Text style={styles.subtitle}>
-            Fast errands and delivery in your city
+            Fast drone delivery at your fingertips
           </Text>
         </View>
 
@@ -30,24 +34,17 @@ const WelcomeScreen = ({ navigation }: any) => {
           <View style={styles.iconRow}>
             <Ionicons name="cube-outline" size={50} color="rgba(255,255,255,0.3)" />
             <Ionicons name="location-outline" size={50} color="rgba(255,255,255,0.3)" style={styles.middleIcon} />
-            <Ionicons name="cart-outline" size={50} color="rgba(255,255,255,0.3)" />
+            <MaterialCommunityIcons name="drone" size={50} color="rgba(255,255,255,0.3)" />
           </View>
         </View>
 
         {/* Footer Buttons */}
         <View style={[styles.footer, { paddingBottom: insets.bottom > 0 ? insets.bottom + 20 : 40 }]}>
           <Button
-            title="Continue as User"
-            onPress={() => navigation.navigate('Login', { role: 'user' })}
+            title="Get Started"
+            onPress={() => navigation.navigate('Login')}
             variant="secondary"
-            icon={<Ionicons name="person" size={22} color="#10b981" />}
-          />
-
-          <Button
-            title="Continue as Courier"
-            onPress={() => navigation.navigate('Login', { role: 'courier' })}
-            variant="primary"
-            icon={<Ionicons name="bicycle" size={22} color="white" />}
+            icon={<Ionicons name="arrow-forward" size={22} color="#10b981" />}
           />
         </View>
       </View>
@@ -80,6 +77,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 16,
     elevation: 8,
+  },
+  appIcon: {
+    width: 90,
+    height: 90,
+    borderRadius: 20,
   },
   title: {
     fontSize: 48,
