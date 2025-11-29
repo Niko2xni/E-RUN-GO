@@ -1,6 +1,6 @@
 # E-Run Go
 
-A mobile-only on-demand delivery and errand-running app built with React Native and Expo. Inspired by Gojek's green theme, E-Run Go features dual user roles (**User/Customer** and **Courier/Driver**) with dedicated dashboards and workflows.
+A mobile-only on-demand drone/robot delivery app built with React Native and Expo. E-Run Go features a modern delivery system where users can request deliveries via autonomous robots, with real-time tracking and status updates.
 
 ![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-blue)
 ![Framework](https://img.shields.io/badge/Framework-React%20Native-61DAFB)
@@ -12,17 +12,16 @@ A mobile-only on-demand delivery and errand-running app built with React Native 
 - ✅ **Quick Login**: Bypass buttons for instant testing
 - ✅ **Dashboard**: View ongoing/recent orders with quick actions
 - ✅ **Create Task**: Multi-step flow (Send Item, Run Errand, Multi-stop)
-- ✅ **Live Tracking**: Real-time courier tracking with maps
+- ✅ **Live Tracking**: Real-time robot tracking with maps
 - ✅ **Order History**: View past deliveries
 - ✅ **Profile**: Manage settings and saved locations
 
-### Courier (Driver) Features
-- ✅ **Online/Offline Toggle**: Control availability
-- ✅ **Earnings Dashboard**: View earnings and transactions
-- ✅ **Task Management**: Accept/decline delivery requests
-- ✅ **Navigation**: Step-by-step delivery guidance
-- ✅ **Proof of Delivery**: Photo capture and recipient confirmation
-- ✅ **Wallet**: Transaction history and payout requests
+### Robot Delivery System
+- 🤖 **Autonomous Robots**: AI-powered delivery robots
+- 📍 **Precise Navigation**: Advanced pathfinding and obstacle avoidance
+- 🔄 **Real-time Updates**: Live tracking of robot location and status
+- 🔋 **Battery Management**: Automatic charging and maintenance alerts
+- 🔒 **Secure Delivery**: Secure compartments and verification
 
 ## 🎨 Design
 
@@ -40,7 +39,7 @@ A mobile-only on-demand delivery and errand-running app built with React Native 
 - **Navigation**: React Navigation (Stack & Bottom Tabs)
 - **Maps**: React Native Maps
 - **Image Picker**: Expo Image Picker (Android 13+ compatible)
-- **Location**: Expo Location (Background support)
+- **Location**: Expo Location (Background support for robot tracking)
 - **Notifications**: Expo Notifications
 - **State**: React Context API
 
@@ -93,28 +92,15 @@ See [SETUP.md](SETUP.md) for detailed setup instructions.
 ## 🧪 Testing
 
 ### Quick Login (Bypass)
-On the login screen, use the **Quick Access** bypass buttons:
-- **Bypass as User** → Go directly to User Dashboard
-- **Bypass as Courier** → Go directly to Courier Dashboard
-
-No credentials needed!
+On the login screen, use the **Quick Access** button to bypass login and go directly to the Dashboard.
 
 ### User Flow
 ```
-Welcome → Login → User Dashboard → Create Task → Live Tracking
-                           ↓
-                    Order History
-                           ↓
-                    User Profile
-```
-
-### Courier Flow
-```
-Welcome → Login → Courier Dashboard → Task Detail → On Trip → Completion
-                           ↓
-                    Earnings & Wallet
-                           ↓
-                    Courier Profile
+Welcome → Login → Dashboard → Create Task → Live Tracking
+                     ↓
+              Order History
+                     ↓
+              User Profile
 ```
 
 ## 📁 Project Structure
@@ -128,8 +114,7 @@ E-RUN-GO/
 │   ├── navigation/       # Navigation structure
 │   ├── screens/          # All app screens
 │   │   ├── auth/         # Welcome, Login, Register
-│   │   ├── user/         # Customer screens
-│   │   └── courier/      # Driver screens
+│   │   └── user/         # User screens
 │   └── utils/            # Utility functions
 ├── assets/               # Images, fonts, icons
 ├── App.tsx               # Main app entry
