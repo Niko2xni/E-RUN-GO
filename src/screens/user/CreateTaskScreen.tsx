@@ -76,11 +76,28 @@ const CreateTaskScreen = ({ navigation, route }) => {
   };
 
   const addStop = () => {
-    setStops([...stops, { address: '', type: 'pickup', note: '' }]);
+    setStops([...stops, { address: '', note: '', description: '', itemPhoto: null }]);
   };
 
   const removeStop = (index) => {
-    setStops(stops.filter((_, i) => i !== index));
+    const newStops = [...stops];
+    newStops.splice(index, 1);
+    setStops(newStops);
+  };
+
+  const pickImageForStop = async (index) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const newStops = [...stops];
+      newStops[index].itemPhoto = result.assets[0].uri;
+      setStops(newStops);
+    }
   };
 
   const handleNext = () => {
@@ -103,6 +120,14 @@ const CreateTaskScreen = ({ navigation, route }) => {
     const stopFees = stops.length * 20;
     const totalPrice = baseFare + distanceFee + stopFees;
 
+    // For multi-stop tasks, use the first stop's description and photo as the main ones
+    const mainDescription = taskType === 'multistop' && stops.length > 0 
+      ? stops[0].description 
+      : description;
+    const mainItemPhoto = taskType === 'multistop' && stops.length > 0 
+      ? stops[0].itemPhoto 
+      : itemPhoto;
+
     const newTask = createTask({
       type: taskType,
       pickup,
@@ -110,8 +135,8 @@ const CreateTaskScreen = ({ navigation, route }) => {
       pickupContact,
       dropoffContact,
       stops,
-      description,
-      itemPhoto,
+      description: mainDescription,
+      itemPhoto: mainItemPhoto,
       timePreference,
       scheduledDate,
       paymentMethod,
@@ -256,26 +281,65 @@ const CreateTaskScreen = ({ navigation, route }) => {
             <Text style={styles.stepTitle}>Task Details</Text>
             <Text style={styles.stepSubtitle}>Tell us more about the task</Text>
 
-            <Input
-              label="Description"
-              value={description}
-              onChangeText={setDescription}
-              placeholder="What needs to be done?"
-              multiline
-              numberOfLines={4}
-            />
+            {taskType === 'multistop' ? (
+              <View style={styles.stopsContainer}>
+                {stops.map((stop, index) => (
+                  <Card key={index} style={styles.stopCard}>
+                    <Text style={styles.stopTitle}>Stop {index + 1} Details</Text>
+                    <Input
+                      label={`Description for Stop ${index + 1}`}
+                      value={stop.description || ''}
+                      onChangeText={(text) => {
+                        const newStops = [...stops];
+                        newStops[index].description = text;
+                        setStops(newStops);
+                      }}
+                      placeholder={`What needs to be done at this stop?`}
+                      multiline
+                      numberOfLines={3}
+                    />
 
-            <Text style={styles.label}>Item Photo (Optional)</Text>
-            <TouchableOpacity style={styles.photoUpload} onPress={pickImage}>
-              {itemPhoto ? (
-                <Image source={{ uri: itemPhoto }} style={styles.uploadedPhoto} />
-              ) : (
-                <View style={styles.photoPlaceholder}>
-                  <Ionicons name="camera-outline" size={32} color={COLORS.textGray} />
-                  <Text style={styles.photoText}>Add Photo</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+                    <Text style={styles.label}>Item Photo for Stop {index + 1} (Optional)</Text>
+                    <TouchableOpacity 
+                      style={styles.photoUpload} 
+                      onPress={() => pickImageForStop(index)}
+                    >
+                      {stop.itemPhoto ? (
+                        <Image source={{ uri: stop.itemPhoto }} style={styles.uploadedPhoto} />
+                      ) : (
+                        <View style={styles.photoPlaceholder}>
+                          <Ionicons name="camera-outline" size={24} color={COLORS.textGray} />
+                          <Text style={styles.photoText}>Add Photo</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  </Card>
+                ))}
+              </View>
+            ) : (
+              <>
+                <Input
+                  label="Description"
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder="What needs to be done?"
+                  multiline
+                  numberOfLines={4}
+                />
+
+                <Text style={styles.label}>Item Photo (Optional)</Text>
+                <TouchableOpacity style={styles.photoUpload} onPress={pickImage}>
+                  {itemPhoto ? (
+                    <Image source={{ uri: itemPhoto }} style={styles.uploadedPhoto} />
+                  ) : (
+                    <View style={styles.photoPlaceholder}>
+                      <Ionicons name="camera-outline" size={32} color={COLORS.textGray} />
+                      <Text style={styles.photoText}>Add Photo</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </>
+            )}
 
             <Text style={styles.label}>When do you need this?</Text>
             <View style={styles.timePreferenceContainer}>
@@ -474,7 +538,11 @@ const CreateTaskScreen = ({ navigation, route }) => {
             disabled={
               (step === 1 && !taskType) ||
               (step === 2 && (!pickup || !dropoff)) ||
-              (step === 3 && !description)
+              (step === 3 && (
+                taskType === 'multistop' 
+                  ? stops.length === 0 || stops.some(stop => !stop.description)
+                  : !description
+              ))
             }
           />
         )}
